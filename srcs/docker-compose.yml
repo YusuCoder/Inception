@@ -5,4 +5,24 @@ services:
     build: ./requirements/nginx
     ports:
       - "443:443"
-    container_name: nginx
+    depends_on:
+      - wordpress
+    networks:
+      - inception
+
+  wordpress:
+    build: ./requirements/wordpress
+    expose:
+      - "9000"
+    environment:
+      - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_NAME=${DB_NAME}
+      - WORDPRESS_DB_USER=${DB_USER}
+      - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
+    networks:
+      - inception
+
+networks:
+  inception:
+    driver: bridge
+
