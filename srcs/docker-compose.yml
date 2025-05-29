@@ -1,45 +1,115 @@
+#If you change the volume of wordpress, don't forget to change the WP_PATH environment variable
+
 version: '3.8'
 
 services:
-  nginx:
-    build: ./requirements/nginx
-    ports:
-      - "443:443"
-    depends_on:
-      - wordpress
-    networks:
-      - inception
+        mariadb:
+                build: requirements/mariadb
+                image: mariadb
+                container_name: mariadb
+                env_file: .env
+                volumes:
+                        - mariadb:/var/lib/mysql
+                restart: on-failure
+                networks:
+                        - inception
 
-  wordpress:
-    build: ./requirements/wordpress
-    expose:
-      - "9000"
-    environment:
-      - WORDPRESS_DB_HOST=mariadb
-      - WORDPRESS_DB_NAME=${DB_NAME}
-      - WORDPRESS_DB_USER=${DB_USER}
-      - WORDPRESS_DB_PASSWORD=${DB_PASSWORD}
-    networks:
-      - inception
-  mariadb:
-    build: ./requirements/mariadb
-    container_name: mariadb
-    volumes:
-      - mariadb-data:/var/lib/mysql
-      - ./requirements/mariadb/conf:/docker-entrypoint-initdb.d
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: supersecure
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wp_user
-      MYSQL_PASSWORD: wp_pass
-    networks:
-      - inception
+        wordpress:
+                build: requirements/wordpress
+                image: wordpress
+                depends_on:
+                        - mariadb
+                container_name: wordpress
+                env_file: .env
+                volumes:
+                        - wordpress:/var/www/wordpress
+                restart: on-failure
+                networks:
+                        - inception
 
-volumes:
-  mariadb-data:
+        nginx:
+                build: requirements/nginx
+                image: nginx
+                depends_on:
+                        - wordpress
+                container_name: nginx
+                env_file: .env
+                volumes:
+                        - wordpress:/var/www/wordpress
+                ports:
+                        - "443:443"
+                restart: on-failure
+                networks:
+                        - inception
 
 networks:
-  inception:
-    driver: bridge
+        inception:
+                driver: bridge
+
+volumes:
+        mariadb:
+                driver_opts:
+                        type: none
+                        device: /home/ryusupov/data/mysql
+                        o: bind
+        wordpress:
+                driver_opts:
+                        type: none
+                        device: /home/ryusupov/data/html
+                        o: bind
+
+
+
+
+
+# version: "3.8"
+
+# services:
+
+#   db:
+#     build: requirements/mariadb
+#     environment:
+#       - MARIADB_ROOT_PASSWORD=yourrootpass
+#       - MARIADB_USER=wp_user
+#       - MARIADB_PASSWORD=wp_pass
+#       - MARIADB_DATABASE=wordpress
+#     restart: always
+#     volumes:
+#       - mariadb:/var/lib/mysql
+#     networks:
+#       - inception
+
+#   wordpress:
+#     build: requirements/wordpress
+#     environment:
+#       - WORDPRESS_DB_USER=wp_user
+#       - WORDPRESS_DB_PASSWORD=wp_pass
+#       - WORDPRESS_DB_NAME=wordpress
+#     restart: always
+#     depends_on:
+#       - db
+#     volumes:
+#       - wordpress:/var/www/html
+#     networks:
+#       - inception
+
+#   nginx:
+#     build: requirements/nginx
+#     ports:
+#       - "443:443"
+#     depends_on:
+#       - wordpress
+#     volumes:
+#       - wordpress:/var/www/html
+#       - certs:/certs
+#     networks:
+#       - inception
+
+# volumes:
+#   mariadb:
+#   wordpress:
+#   certs:
+
+# networks:
+#   inception:
 

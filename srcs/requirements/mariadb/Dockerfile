@@ -1,23 +1,22 @@
-FROM alpine:10.6.14
-
-RUN addgroup -S mysql
-RUN adduser --disabled-password --ingroup mysql mysql
-
-RUN apk add --no-cache mariadb mariadb-client su-exec
-
-COPY tools/docker-entrypoint.sh /usr/local/bin/
-
-EXPOSE 3306
-ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
-CMD ["mariadbd"]
+FROM debian:buster
 
 
-# ENV MYSQL_ROOT_PASSWORD=supersecure
-# ENV MYSQL_DATABAASE=wordpress
-# ENV MYSQL_USER=wp_user
-# ENV MYSQL_PASSWORD=wp_password
+RUN apt-get update -yq && \
+	apt-get upgrade -y && \
+	apt-get install mariadb-server \
+	mariadb-client -y && \
+	mkdir -p /var/run/mysqld && \
+	chown -R mysql:mysql /var/run/mysqld && \
+	chown -R mysql:mysql /etc/mysql/
+
+COPY ./tools/run.sh /tmp/
+COPY ./conf/init.sql /tmp/
+COPY ./conf/my.cnf /etc/mysql
+
+RUN chown -R mysql:mysql /tmp/ && \
+	chown -R mysql:mysql /etc/mysql
 
 
-# EXPOSE 3306
+USER mysql
 
-# VOLUME /var/lib/mysql
+ENTRYPOINT [ "sh", "/tmp/run.sh" ]
