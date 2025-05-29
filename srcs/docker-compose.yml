@@ -1,5 +1,3 @@
-#If you change the volume of wordpress, don't forget to change the WP_PATH environment variable
-
 version: '3.8'
 
 services:
@@ -58,58 +56,4 @@ volumes:
                         device: /home/ryusupov/data/html
                         o: bind
 
-
-
-
-
-# version: "3.8"
-
-# services:
-
-#   db:
-#     build: requirements/mariadb
-#     environment:
-#       - MARIADB_ROOT_PASSWORD=yourrootpass
-#       - MARIADB_USER=wp_user
-#       - MARIADB_PASSWORD=wp_pass
-#       - MARIADB_DATABASE=wordpress
-#     restart: always
-#     volumes:
-#       - mariadb:/var/lib/mysql
-#     networks:
-#       - inception
-
-#   wordpress:
-#     build: requirements/wordpress
-#     environment:
-#       - WORDPRESS_DB_USER=wp_user
-#       - WORDPRESS_DB_PASSWORD=wp_pass
-#       - WORDPRESS_DB_NAME=wordpress
-#     restart: always
-#     depends_on:
-#       - db
-#     volumes:
-#       - wordpress:/var/www/html
-#     networks:
-#       - inception
-
-#   nginx:
-#     build: requirements/nginx
-#     ports:
-#       - "443:443"
-#     depends_on:
-#       - wordpress
-#     volumes:
-#       - wordpress:/var/www/html
-#       - certs:/certs
-#     networks:
-#       - inception
-
-# volumes:
-#   mariadb:
-#   wordpress:
-#   certs:
-
-# networks:
-#   inception:
 

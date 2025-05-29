@@ -15,7 +15,7 @@ else
     mysqld --init-file="/tmp/init.sql" &
 fi
 
-# Wait for MariaDB to be ready
+# Waiting for MariaDB to be ready
 until mysqladmin ping --silent -h "$MYSQL_ADDRESS" -P "$MYSQL_PORT" -u "$MYSQL_USER" -p"$MYSQL_PASSWORD"; do
   echo "Waiting for MariaDB to be ready..."
   sleep 2
