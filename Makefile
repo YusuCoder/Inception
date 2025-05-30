@@ -17,11 +17,6 @@ install:
 build:
 	$(DOCC) -f ./srcs/$(DOCC).yml build
 
-rm_vol:
-	sudo chown -R $(USER) $(HOME)/data
-	sudo chmod -R 777 $(HOME)/data
-	rm -rf $(HOME)/data
-
 create_vol:
 	mkdir -p $(HOME)/data/mysql
 	mkdir -p $(HOME)/data/html
